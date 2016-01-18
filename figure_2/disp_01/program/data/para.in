@@ -1,0 +1,26 @@
+# density-dependent emigration? (yes/no)
+no
+# niche width
+0.5
+# dispersal evolution (0/1)
+1
+# evolution of optimal temperatures (0/1)
+1
+# carrying capacity
+100
+# growth rate
+2
+# environmental stochasticity
+0.0
+# dispersal mortality
+0.2
+# extinction probability
+0.05
+# mutation rate (dispersal)
+1e-04
+# maximum temperature
+10
+# simulated generations
+5000
+# replicates
+1
