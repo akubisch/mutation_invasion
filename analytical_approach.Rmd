@@ -1,0 +1,238 @@
+---
+title: "A simple analytical approach to calculate optimal mutation rates"
+author: "Cobben, M.P.P., Mitesser, O. & Kubisch, A."
+output: 
+  pdf_document:
+    fig_width: 4
+    fig_height: 3
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(ggplot2)
+library(gridExtra)
+library(grid)
+library(scales)
+```
+
+## The Model
+
+We assume a very simplified model of selection for optimal environmental values, which we refer to as temperatures. We focus on a population living in this environment and calculate its fitness depending on occurring mutations of variable strength in the next generation. Details are as follows.
+
+### Environment
+
+Temperatures occurring in the environment are denoted by $\tau_E$. The distribution of these values in the environment is assumed to Gaussian:
+
+\begin{equation}
+f(\tau_E) = \frac{1}{s_E \sqrt{2\pi}} \cdot exp \left( - \left( \frac{\tau_E-\mu_E}{s_E} \right)^2 \right)
+\end{equation}
+
+with $\mu_E$ denoting the environmental mean temperature and $s_E$ the standard deviation of temperatures in the environment. Note that we assume that the curve scales to 1 to simplify further calculations.
+
+This gives the following distribution of temperatures in the environment:
+
+```{r Figure 1, echo=FALSE, fig.cap="Probability density distribution of temperatures $\\tau_E$ in the landscape. Parameter values are $\\mu_E=0$, $s_E=1$.", fig.pos="p"}
+
+fun.T = function(x) {
+  f = 1/(1*sqrt(2*pi))*exp(-((x-0)/1)^2)
+  return(f)
+}
+par(mar=c(5,5,1,1))
+
+ggplot(data = data.frame(x = 0), mapping = aes(x = x)) + stat_function(fun = fun.T, size=1.5) + xlim(-2,2) +
+  theme_bw(base_size=16) +
+  xlab(expression(tau[E])) +
+  ylab("temperature\n probability density") +
+  theme(axis.line = element_line(colour = "black"),
+        panel.border = element_blank())
+
+```
+
+### Population
+
+We further assume a population of individuals living in this environment, which is characterized by a distribution of trait values (i.e. individual optimal temperatures) that is also modeled as a Gaussian distribution with mean $\mu_P$ and standard deviation $s_P$:
+
+\begin{equation}
+f(\tau_P) = \frac{1}{s_P \sqrt{2\pi}} \cdot exp \left( - \left( \frac{\tau_P-\mu_P}{s_P} \right)^2 \right)
+\end{equation}
+
+### Mutations
+
+We assume that mutations, depending on their strength, affect the variability of the trait distribution at the population level. Assuming that the effect of mutations itself is Gaussian this results in an update of the population-level standard deviation $s_P$ to $s'_P$:
+
+\begin{equation}
+s'_P= \sqrt{s^2_P+s^2_m}
+\end{equation}
+
+### Environmental change
+
+The environment changes to a certain degree in the next generation, the strength of which is denoted by $\Delta_\tau$. Here we assume no change in the variance, but only the mean of the distribution of temperature values in the environment (i.e. $\mu'_E = \mu_E + \Delta_\tau$).
+
+The following plot shows the original (dotted gray line) and new environmental temperature distribution (solid black line) and the population's trait distribution following mutation (dashed red line) assuming a mutation strength of $s_m=1.5$ and a change in the mean environment of $\Delta_\tau=0.5$.
+
+```{r Figure 2, echo=FALSE, fig.cap="Probability density distribution of temperatures $\\tau_E$ before (dotted grey line) and after environmental change (solid black line). The dashed red line shows the trait distribution in the population after mutation. Parameter values are $\\mu_E=0$, $s_E=1$, $\\mu_P=0$, $s_P=0$, $s_m=1.5$, $\\Delta_\\tau=0.5$.", fig.pos="p"}
+
+fun.T.orig = function(x) {
+  f = 1/(1*sqrt(2*pi))*exp(-((x-0)/1)^2)
+  return(f)
+}
+
+fun.T.new = function(x) {
+  f = 1/(1*sqrt(2*pi))*exp(-((x-0.5)/1)^2)
+  return(f)
+}
+
+fun.P.new = function(x) {
+  s = sqrt(1+1.5^2)
+  f = 1/(s*sqrt(2*pi))*exp(-((x-0)/s)^2)
+}
+par(mar=c(5,5,1,1))
+
+ggplot(data = data.frame(x = 0), mapping = aes(x = x)) + stat_function(fun = fun.T.orig, size=1.5,col="grey75",linetype=3) + xlim(-2,2) +
+  stat_function(fun=fun.T.new,size=1.5) +
+  stat_function(fun=fun.P.new,size=1.5,col="red",linetype=2) +
+  theme_bw(base_size=16) +
+  xlab(expression(tau[E])) +
+  ylab("temp. probability/\n trait density") +
+  theme(axis.line = element_line(colour = "black"),
+        panel.border = element_blank())
+```
+
+### Fitness computation
+
+To calculate the fitness effect of the given mutation strength we first calculate the product of above functions (i.e. $f(\tau_E) \cdot f(\tau_P=)$), which gives us the survival probability of all occurring trait values:
+
+\begin{equation}
+f(_\tau) = \frac{1}{s_P \cdot s_E \cdot 2\pi} \cdot exp \left( - \left( \frac{\tau - \mu_P}{s_P} \right)^2 - \left( \frac{\tau - \mu_E}{s_E} \right)^2 \right)
+\end{equation}
+
+We integrate $f(\tau)$ over $d\tau$ to calculate mean expected fitness $\omega$:
+
+\begin{equation}
+\omega = \int_{-\infty}^{\infty} f(\tau)d\tau = \frac{1}{s_P \cdot s_E \cdot 2\sqrt{\pi}} \cdot \frac{1}{\sqrt{s^{-2}_P+s^{-2}_E}} \cdot exp \left( -\frac{(\mu_P-\mu_E)^2}{s^2_P+s^2_E} \right)
+\end{equation}
+
+The graph below shows the environmental temperature and fitness distribution in the population level (dashed red line). The highlighted area below the trait distribution is integrated.
+
+```{r Figure 3, echo=FALSE, fig.cap="Probability density distribution of temperatures $\\tau_E$ after environmental change (solid black line). The dashed red line now shows the fitness distribution within the population. The highlighted area below is integrated to calculate mean fitness $\\omega$. Note that for reasons of clarity the original temperature distribution before environmental change has been omitted. Parameter values as in Fig. 2.", fig.pos="p"}
+
+fun.T.new = function(x) {
+  f = 1/(1*sqrt(2*pi))*exp(-((x-0.5)/1)^2)
+  return(f)
+}
+
+fun.omega = function(x) {
+  se = sqrt(1+1.5^2)
+  fe = 1/(se*sqrt(2*pi))*exp(-((x-0)/se)^2)
+  ft = 1/(1*sqrt(2*pi))*exp(-((x-0.5)/1)^2)
+  fo = fe*ft
+  return(fo)
+}
+
+par(mar=c(5,5,1,1))
+
+ggplot(data = data.frame(x = 0), mapping = aes(x = x)) + xlim(-2,2) +
+  stat_function(fun=fun.T.new,size=1.5) +
+  stat_function(fun=fun.omega,size=1.5,col="red",linetype=2) +
+  stat_function(fun=fun.omega,geom="area",fill="red",alpha=0.2) +
+  theme_bw(base_size=16) +
+  xlab(expression(tau[E])) +
+  ylab("temp. prob. density/\n fitness") +
+  theme(axis.line = element_line(colour = "black"),
+        panel.border = element_blank())
+```
+
+### Calculating optimal mutation rates
+
+In order to calculate optimal mutation rates we simply create a vector of possible mutation rates for each strength of environmental change $\Delta_\tau$ and compute their fitness effect using above equation. We then pick the mutation rate, which maximizes the population's fitness expectations. This results in the following graph: the left panel (A) shows for four values of $\Delta_\tau$ the corresponding fitness values of each mutation strength. Red triangles indicate maximum values. The right panel (B) shows these optimal mutation rates as a function of the strength of environmental change $\Delta_\tau$.\\ \newpage
+
+```{r Figure 4, echo=FALSE, fig.cap="Results of the numeric approximation of optimal mutation rates. (A) The integrated population fitness for given values of $\\Delta_\\tau$ and mutation strength $s_m$. The red triangles denote the optimal values of $s_m$ that maximize fitness. (B) The resulting optimal mutation strength plotted over the degree of environmental change $\\Delta_\\tau$. Parameter values: $s_P=1$, $\\mu_P=0$, $s_E=1$, $\\mu_E=0$.", fig.pos="p", fig.width=6.5, fig.height=4}
+fun.omega = function(delta,s_m) {
+  se = sqrt(1+s_m^2)
+  sp=1
+  omega = 1/(2*sqrt(pi)*se*sp) * 1/(sqrt(sp^(-2)+se^(-2))) *exp(-((0-delta)^2)/(sp^2+se^2))
+  return(omega)
+}
+
+deltas = 0:3
+s_ms = seq(0,6,len=1000)
+del = numeric()
+mut = numeric()
+fit = numeric()
+for (d in deltas) {
+  for (m in s_ms) {
+    o = fun.omega(d,m)
+    fit = c(fit,o)
+    del = c(del,d)
+    mut = c(mut,m)
+  }
+}
+
+dat_A = data.frame(delta=del,mutation=mut,fitness=fit)
+
+fun1 = function(x) {
+  return(which(x==max(x)))
+}
+maxs = tapply(dat_A$fitness,list(dat_A$delta),fun1)
+
+dat_A1 = data.frame(optim_mut = dat_A$mutation[maxs],
+                    optim_fit = dat_A$fitness[maxs+c(0,1000,2000,3000)],
+                    delta = c(0,1,2,3))
+
+
+pA = ggplot(data=dat_A,aes(x=mutation,y=fitness,colour=factor(delta))) + 
+  geom_point(size=0.8) + 
+  ggtitle("A") +
+  theme_bw(base_size=16) +
+  theme(plot.title = element_text(hjust = 0,size=17)) +
+  labs(y="fitness", x = expression(paste("mutation strength (",s[m],")"))) +
+  theme(legend.position="top") +
+  scale_color_grey(name=expression(Delta[tau])) +
+  theme(axis.line = element_line(colour = "black"),
+        panel.border = element_blank()) +
+  geom_point(data=dat_A1,aes(x=optim_mut,y=optim_fit),size=3,col="red",shape=17) 
+
+
+deltas = seq(0,3,len=1000)
+s_ms = seq(0,6,len=1000)
+optim_mut = numeric()
+
+for (d in deltas) {
+  fit = numeric()
+  for (m in s_ms) {
+    fit = c(fit,fun.omega(d,m))
+  }
+  optim_mut = c(optim_mut,s_ms[fit==max(fit)])
+}
+
+dat_B = data.frame(delta=deltas,optim_mut=optim_mut)
+
+pB = ggplot(data=dat_B,aes(x=deltas,y=optim_mut)) +
+  geom_point(size=0.8) +
+  ggtitle("B") +
+  theme_bw(base_size=16) +
+  theme(plot.title = element_text(hjust = 0,size=17)) +
+  labs(y="optimal mutation strength", x = expression(Delta[tau])) +
+  theme(legend.position="top") +
+  scale_color_grey(name=expression(Delta[tau])) +
+  theme(axis.line = element_line(colour = "black"),
+        panel.border = element_blank()) +
+  geom_point(data=dat_A1,aes(x=delta,y=optim_mut),size=3,col="red",shape=17)
+#
+
+grid.arrange(pA,pB,nrow=1,ncol=2)
+
+```
+
+##Conclusions
+
+Both the individual-based simulations from the main text and this simple analytical approach lead to the results that a stronger change in the environmental conditions should favor higher mutation rates in order to maximize the populations' fitness expectations. This congruence in the results of different approaches corroborates our main findings and makes the presence of technical shortcomings highly unlikely.
+
+
+
+
+
+
+
+
+
