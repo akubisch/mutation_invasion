@@ -21,7 +21,7 @@ We assume a very simplified model of selection for optimal environmental values,
 
 ### Environment and fitness
 
-Temperatures occurring in the environment are denoted by $\tau_E$. The effect of temperature on survival is assumed to be of Gaussian shape:
+Temperatures in the environment are denoted by $\tau_E$. The effect of temperature on survival probability is assumed to be of Gaussian shape:
 
 \begin{equation}
 f(\tau_E) = exp \left( - \left( \frac{\tau_E-\mu_E}{s_E} \right)^2 \right)
@@ -91,28 +91,28 @@ ggplot(data = data.frame(x = 0), mapping = aes(x = x)) + stat_function(fun = fun
   stat_function(fun=fun.P.new,size=1.5,col="red",linetype=2) +
   theme_bw(base_size=16) +
   xlab(expression(tau[E])) +
-  ylab("temp. probability/\n trait density") +
+  ylab("survival probability/\n trait density") +
   theme(axis.line = element_line(colour = "black"),
         panel.border = element_blank())
 ```
 
 ### Mean fitness computation
 
-To calculate the fitness effect of the given mutation strength we first calculate the product of above functions (i.e. $f(\tau_E) \cdot g(\tau_P)$), which gives us the survival probability for all occurring trait values:
+To calculate the fitness effect of the given mutation strength we first calculate the product of above functions (i.e. $f(\tau) \cdot g(\tau)$), which gives us the survival probability for all occurring trait values:
 
 \begin{equation}
-h(_\tau) = \frac{1}{s_P \cdot \sqrt{2\pi}} \cdot exp \left( - \left( \frac{\tau - \mu_P}{s_P} \right)^2 - \left( \frac{\tau - \mu_E}{s_E} \right)^2 \right)
+h(\tau) = \frac{1}{s_P \cdot \sqrt{2\pi}} \cdot exp \left( - \left( \frac{\tau - \mu_P}{s_P} \right)^2 - \left( \frac{\tau - \mu_E}{s_E} \right)^2 \right)
 \end{equation}
 
 We integrate $h(\tau)$ over $\tau$ to calculate mean expected fitness $\omega$:
 
 \begin{equation}
-\omega = \int_{-\infty}^{\infty} f(\tau)d\tau = \frac{1}{s_P \cdot \sqrt{2\pi}} \cdot \frac{1}{\sqrt{s^{-2}_P+s^{-2}_E}} \cdot exp \left( -\frac{(\mu_P-\mu_E)^2}{s^2_P+s^2_E} \right)
+\omega = \int_{-\infty}^{\infty} f(\tau)d\tau = \frac{1}{s_P \cdot \sqrt{2}} \cdot \frac{1}{\sqrt{s^{-2}_P+s^{-2}_E}} \cdot exp \left( -\frac{(\mu_P-\mu_E)^2}{s^2_P+s^2_E} \right)
 \end{equation}
 
-The graph in Fig. 3 shows survival probability (black line) and fitness distribution at the population level (dashed red line). The highlighted area below the trait distribution indicates expected mean fitness (calculated via integration, eq. 5).
+The graph in Fig. 3 shows survival probability (black line) and fitness distribution (dashed red line) at the population level. The highlighted area below the trait distribution indicates expected mean fitness (calculated via integration, eq. 5).
 
-```{r Figure 3, echo=FALSE, fig.cap="Survival probability in response to temperatures $\\tau_E$ after environmental change (solid black line). The dashed red line now shows the fitness distribution within the population. The highlighted area below the trait distribution indicates expected mean fitness (calculated via integration, eq. 5). Note that for reasons of clarity the original survival probability in response to temperatures before environmental change has been omitted. Parameter values as in Fig. 2.", fig.pos="p"}
+```{r Figure 3, echo=FALSE, fig.cap="Survival probability in response to temperatures $\\tau_E$ after environmental change (solid black line). The dashed red line shows the fitness distribution within the population. The highlighted area below the trait distribution indicates expected mean fitness (calculated via integration, eq. 5). Note that for reasons of clarity the original survival probability in response to temperatures before environmental change has been omitted. Parameter values as in Fig. 2.", fig.pos="p"}
 
 fun.T.new = function(x) {
   f = exp(-((x-0.5)/1)^2)
@@ -135,12 +135,12 @@ ggplot(data = data.frame(x = 0), mapping = aes(x = x)) + xlim(-2,2) +
   stat_function(fun=fun.omega,geom="area",fill="red",alpha=0.2) +
   theme_bw(base_size=16) +
   xlab(expression(tau[E])) +
-  ylab("temp. prob. density/\n fitness") +
+  ylab("survival probability/\n fitness") +
   theme(axis.line = element_line(colour = "black"),
         panel.border = element_blank())
 ```
 
-### Calculating optimal mutation rates
+## Calculating optimal mutation rates
 
 In order to calculate optimal mutation rates we simply create a vector of possible mutation rates for each strength of environmental change $\Delta_\tau$ and compute their fitness effects using equation 5. We then pick the mutation rate ($s_m$), which maximizes the population's fitness expectations. Results are summarized in Figure 4: the left panel (A) shows (for four values of $\Delta_\tau$) the corresponding fitness values of each mutation strength. Red triangles indicate maximum values. The right panel (B) shows these optimal mutation rates as a function of the strength of environmental change $\Delta_\tau$. \newpage
 
@@ -225,7 +225,7 @@ grid.arrange(pA,pB,nrow=1,ncol=2)
 
 ##Conclusions
 
-Both the individual-based simulations from the main text and this simple analytical approach lead to the result that a stronger change in the environmental conditions should favor higher mutation rates in order to maximize the populations' fitness expectations. The analytical approach directly demonstrates that the combination of a normally distributed environmental characteristic and a corresponding normally shaped response in survival are sufficient to predict selection pressure on mutation rate.
+Both the individual-based simulations from the main text and this simple analytical approach lead to the result that a stronger change in the environmental conditions should favor higher mutation rates in order to maximize the populations' fitness expectations. The analytical approach directly demonstrates that the combination of a normally distributed environmental characteristic and a corresponding normally shaped response in survival are sufficient to predict selection pressure on mutation rate. 
 
 
 
