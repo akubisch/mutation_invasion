@@ -1,7 +1,7 @@
 write("simulation package initiated...", file="progress.sim", append=F)
 
-path_spat <- "../spatial/"
-path_nospat <- "../non_spatial/"
+path_spat <- "../figure_S4"
+path_nospat <- "../figure_S3b"
 
 setwd("non_spatial/")
 

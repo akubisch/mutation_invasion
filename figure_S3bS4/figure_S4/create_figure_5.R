@@ -8,7 +8,7 @@ neut_div  <- as.matrix(read.table("processed_results/neut_div.txt"))
 disp_div <- as.matrix(read.table("processed_results/disp_div.txt"))
 cnts <- as.matrix(read.table("processed_results/cnts.txt"))
 
-# figure 1
+# figure 5
 
 x11(width=7.5,height=10)
 
@@ -20,7 +20,7 @@ cntbreak <- 10
 
 par(mfrow=c(3,2),bty="l",mar=c(1,6,2,1),oma=c(5,0,0,0),lwd=2,cex.axis=1.75,cex.lab=1.85)
 
-plot(1,1,type="n",xlab="",ylab="population density",xlim=c(0,250),ylim=c(.3,.9),xaxt="n")
+plot(1,1,type="n",xlab="",ylab="population density",xlim=c(0,250),ylim=c(.2,.7),xaxt="n")
 axis(side=1,labels=F)
 
 for (t in 1:length(ts)) {
@@ -30,7 +30,8 @@ for (t in 1:length(ts)) {
 }
 text(10,par("usr")[[4]]*1.03,"A",xpd=T,cex=2)
 
-plot(1,1,type="n",xlab="",ylab="dispersal probability",xlim=c(0,250),ylim=c(.15,.3),xaxt="n")
+plot(1,1,type="n",xlab="",ylab="dispersal probability",xlim=c(0,250),ylim=c(.1,.2),xaxt="n",yaxt="n")
+axis(side=2,at=c(0.1,0.15,0.2))
 axis(side=1,labels=F)
 
 for (t in 1:length(ts)) {
@@ -44,7 +45,7 @@ text(10,par("usr")[[4]]*1.025,"B",xpd=T,cex=2)
 plot(1,1,type="n",xlab="",ylab=expression(paste("mutation rate of ",tau[opt]," (*",10^-4,")",sep="")),
      xlim=c(0,250),ylim=c(0.00,15),xaxt="n",yaxt="n")
 axis(side=1,labels=F)
-axis(side=2,at=c(0,5,10,15))
+axis(side=2,at=c(0,5,10,15,20))
 
 for (t in 1:length(ts)) {
 	m <- as.numeric(evol[ts[t],][which(cnts[ts[t],]>=cntbreak)])
@@ -67,11 +68,11 @@ for (t in 1:length(ts)) {
 text(10,par("usr")[[4]]*1.05,"D",xpd=T,cex=2)
 
 plot(1,1,type="n",xlab="",ylab=expression(paste("disp. locus gen. diversity (*",10^-2,")",sep="")),
-     xlim=c(0,250),ylim=c(0.0,0.3))
+     xlim=c(0,250),ylim=c(0.0,0.2))
 
 for (t in 1:length(ts)) {
   m <- as.numeric(disp_div[ts[t],][which(cnts[ts[t],]>=cntbreak)])
-  
+
   lines(runmean(100*m,wd),col=cols[t])
 }
 text(10,par("usr")[[4]]*1.05,"E",xpd=T,cex=2)
@@ -81,7 +82,7 @@ plot(1,1,type="n",xlab="",ylab=expression(paste("neutral genetic diversity (*",1
 
 for (t in 1:length(ts)) {
 	m <- as.numeric(neut_div[ts[t],][which(cnts[ts[t],]>=cntbreak)])
-	
+
 	lines(runmean(100*m,wd),col=cols[t])
 }
 text(10,par("usr")[[4]]*1.05,"F",xpd=T,cex=2)
@@ -91,5 +92,4 @@ legend("topright",bty="n",lwd=2,col=cols,c("t = 100", "t = 300", "t = 500", "t =
 
 title(xlab="spatial location",outer=T)
 
-dev.copy2eps(file="figure1.eps",title="Cobben & Kubisch - Figure 1")
-
+dev.copy2eps(file="figure5.eps",title="Cobben & Kubisch - Figure 5")

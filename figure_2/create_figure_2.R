@@ -1,64 +1,79 @@
 require(caTools)
 
-evol_d005 <- as.matrix(read.table("disp_005/processed_results/evol.txt"))
-cnts_d005 <- as.matrix(read.table("disp_005/processed_results/cnts.txt"))
-evol_d01  <- as.matrix(read.table("disp_01/processed_results/evol.txt"))
-cnts_d01 <- as.matrix(read.table("disp_01/processed_results/cnts.txt"))
-evol_d02  <- as.matrix(read.table("disp_02/processed_results/evol.txt"))
-cnts_d02 <- as.matrix(read.table("disp_02/processed_results/cnts.txt"))
+occ_d02   <- as.matrix(read.table("disp_02/processed_results/occ.txt"))
+occ_mutfix  <- as.matrix(read.table("mut_4/processed_results/occ.txt"))
+occ_mutlowfix <- as.matrix(read.table("mut_5/processed_results/occ.txt"))
+occ_d02_mutfix <- as.matrix(read.table("disp_02_fixed_mut/processed_results/occ.txt"))
+occ_d02_lowmutfix <- as.matrix(read.table("disp_02_fixed_lowmut/processed_results/occ.txt"))
+occ  <- as.matrix(read.table("dispevol/processed_results/occ.txt"))
 
-x11(width=3.75,height=10)
 
-wd <- 10
+R_mutfix <- numeric()
+for (t in 1:150) {
+	o <- rev(occ_mutfix[t,])
+	R_mutfix[t] <- length(o[!is.na(o)])
+}
+
+R <- numeric()
+for (t in 1:150) {
+	o <- rev(occ[t,])
+	R[t] <- length(o[!is.na(o)])
+}
+
+R_lowmutfix <- numeric()
+for (t in 1:150) {
+	o <- rev(occ_mutlowfix[t,])
+	R_lowmutfix[t] <- length(o[!is.na(o)])
+}
+
+R_dmutfix <- numeric()
+for (t in 1:150) {
+  o <- rev(occ_d02_mutfix[t,])
+  R_dmutfix[t] <- length(o[!is.na(o)])
+}
+
+R_dlowmutfix <- numeric()
+for (t in 1:150) {
+  o <- rev(occ_d02_lowmutfix[t,])
+  R_dlowmutfix[t] <- length(o[!is.na(o)])
+}
+
+R_dfix <- numeric()
+for (t in 1:150) {
+  o <- rev(occ_d02[t,])
+  R_dfix[t] <- length(o[!is.na(o)])
+}
+
+x11(width=3.75,height=6.67)
+
+wd <- 20
 
 ts <- c(5,10,15,50)
 cols <- gray(seq(0.8,0,len=length(ts)))
 cntbreak <- 20
 
-par(mfrow=c(3,1),bty="l",mar=c(1.5,6,2,1.5),lwd=2,cex.axis=1.5,cex.lab=1.75,oma=c(4,0,0,0))
-
-plot(1,1,type="n",xlab="",ylab=expression(paste("mutation rate of ",tau[opt]," (*",10^-4,")",sep="")),xlim=c(0,250),ylim=c(.5,20),xaxt="n",
-	 main=expression(d==0.05),cex.main=1.75)
-#axis(side=1,labels=F)
-
-for (t in 1:length(ts)) {
-
-	m <- as.numeric(evol_d005[ts[t],][which(cnts_d005[ts[t],]>=cntbreak)])
-	if (length(which(m==0))>0) {m <- m[-which(m==0)]}
-
-	lines(runmean(10000*10^-m,wd),col=cols[t])
-}
-text(10,par("usr")[[4]]*1.03,"A",xpd=T,cex=2)
-
-legend("topright",col=cols,bty="n",cex=1.35,lwd=2,c("t=500","t=1000","t=1500","t=5000"))
-
-plot(1,1,type="n",xlab="",ylab=expression(paste("mutation rate of ",tau[opt]," (*",10^-4,")",sep="")),xlim=c(0,250),ylim=c(.5,20),xaxt="n",
-	 main=expression(d==0.1),cex.main=1.75)
-#axis(side=1,labels=F)
-
-for (t in 1:length(ts)) {
-
-	m <- as.numeric(evol_d01[ts[t],][which(cnts_d01[ts[t],]>=cntbreak)])
-	if (length(which(m==0))>0) {m <- m[-which(m==0)]}
-
-	lines(runmean(10000*10^-m,wd),col=cols[t])
-}
-text(10,par("usr")[[4]]*1.03,"B",xpd=T,cex=2)
+par(mfrow=c(2,1),bty="l",mar=c(2,6,2,1.5),lwd=2,cex.axis=1.25,cex.lab=1.5,oma=c(4,0,0,0))
 
 
-plot(1,1,type="n",xlab="",ylab=expression(paste("mutation rate of ",tau[opt]," (*",10^-4,")",sep="")),xlim=c(0,250),ylim=c(.5,20),
-	 main=expression(d==0.2),cex.main=1.75)
-#axis(side=1,labels=T)
+plot(1,1,type="n",xlab="time (generations)",ylab="range border position",xlim=c(0,5000),ylim=c(75,250),main="         evolving dispersal")
 
-for (t in 1:length(ts)) {
+lines(runmean(R[101:150],00)~seq(1,5000,len=50),lwd=2)
+lines(runmean(R_mutfix[101:150],00)~seq(1,5000,len=50),lwd=2,lty="dashed")
+lines(runmean(R_lowmutfix[101:150],00)~seq(1,5000,len=50),lwd=2,lty="dotted")
 
-	m <- as.numeric(evol_d02[ts[t],][which(cnts_d02[ts[t],]>=cntbreak)])
-	if (length(which(m==0))>0) {m <- m[-which(m==0)]}
+#legend("bottomright",bty="n",lwd=2,lty=c("solid","dashed","dotted"),cex=1.25,c("control",expression(m==10^-4),expression(m==10^-5)))
+text(200,par("usr")[[4]]*1.05,"A",xpd=T,cex=1.75)
 
-	lines(runmean(10000*10^-m,wd),col=cols[t])
-}
-text(10,par("usr")[[4]]*1.03,"C",xpd=T,cex=2)
 
-title(xlab="spatial location", outer=T, line=2, adj=0.6)
+plot(1,1,type="n",xlab="time (generations)",ylab="range border position",xlim=c(0,5000),ylim=c(75,250),main="         fixed dispersal")
 
-dev.copy2eps(file="figure_2.eps", title="Cobben & Kubisch - Figure 2")
+lines(runmean(R_dfix[101:150],00)~seq(1,5000,len=50),lwd=2)
+lines(runmean(R_dmutfix[101:150],00)~seq(1,5000,len=50),lwd=2,lty="dashed")
+lines(runmean(R_dlowmutfix[101:150],00)~seq(1,5000,len=50),lwd=2,lty="dotted")
+
+legend("bottomright",bty="n",lwd=2,lty=c("solid","dashed","dotted"),cex=1.15,c("m = evol.",expression(m==10^-4),expression(m==10^-5)))
+text(200,par("usr")[[4]]*1.05,"B",xpd=T,cex=1.75)
+
+title(xlab="time (generations)", outer=T, line=1.5, adj=0.6)
+
+dev.copy2eps(file="figure_2.eps",title="Cobben & Kubisch - Figure 2")

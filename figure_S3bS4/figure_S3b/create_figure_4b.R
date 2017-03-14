@@ -29,7 +29,7 @@ axis(side=2,at=c(0,0.3,0.6))
 lines(dens_t~ts)
 text(250,par("usr")[[4]]*1.005,"A",xpd=T,cex=2)
 
-plot(1,1,type="n",xlim=range(ts),ylim=c(0.15,0.25),xlab="",ylab="dispersal rate",yaxt="n",xaxt="n")
+plot(1,1,type="n",xlim=range(ts),ylim=c(0.15,0.25),xlab="",ylab="dispersal probability",yaxt="n",xaxt="n")
 axis(side=1,at=c(0,2500,5000))
 axis(side=2,at=c(0.15,0.2,0.25))
 lines(disp_t~ts)
