@@ -30,7 +30,7 @@ for (t in 1:length(ts)) {
 }
 text(10,par("usr")[[4]]*1.03,"A",xpd=T,cex=2)
 
-plot(1,1,type="n",xlab="",ylab="dispersal probability",xlim=c(0,250),ylim=c(.15,.2),xaxt="n")
+plot(1,1,type="n",xlab="",ylab="dispersal probability",xlim=c(0,250),ylim=c(.15,.3),xaxt="n")
 axis(side=1,labels=F)
 
 for (t in 1:length(ts)) {
@@ -38,13 +38,13 @@ for (t in 1:length(ts)) {
 
 	lines(runmean(m,wd),col=cols[t])
 }
-text(10,par("usr")[[4]]*1.005,"B",xpd=T,cex=2)
+text(10,par("usr")[[4]]*1.025,"B",xpd=T,cex=2)
 
 
 plot(1,1,type="n",xlab="",ylab=expression(paste("mutation rate of ",tau[opt]," (*",10^-4,")",sep="")),
-     xlim=c(0,250),ylim=c(0.00,2),xaxt="n",yaxt="n")
+     xlim=c(0,250),ylim=c(0.00,15),xaxt="n",yaxt="n")
 axis(side=1,labels=F)
-axis(side=2,at=c(0,0.5,1,1.5,2))
+axis(side=2,at=c(0,5,10,15))
 
 for (t in 1:length(ts)) {
 	m <- as.numeric(evol[ts[t],][which(cnts[ts[t],]>=cntbreak)])
@@ -67,7 +67,7 @@ for (t in 1:length(ts)) {
 text(10,par("usr")[[4]]*1.05,"D",xpd=T,cex=2)
 
 plot(1,1,type="n",xlab="",ylab=expression(paste("disp. locus gen. diversity (*",10^-2,")",sep="")),
-     xlim=c(0,250),ylim=c(0.0,0.1))
+     xlim=c(0,250),ylim=c(0.0,0.3))
 
 for (t in 1:length(ts)) {
   m <- as.numeric(disp_div[ts[t],][which(cnts[ts[t],]>=cntbreak)])
@@ -91,5 +91,5 @@ legend("topright",bty="n",lwd=2,col=cols,c("t = 100", "t = 300", "t = 500", "t =
 
 title(xlab="spatial location",outer=T)
 
-dev.copy2eps(file="figureS2.eps",title="Cobben & Kubisch - Figure S2")
+dev.copy2eps(file="figure_1.eps",title="Cobben & Kubisch - Figure 1")
 

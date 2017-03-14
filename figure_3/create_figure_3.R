@@ -61,4 +61,4 @@ text(10,par("usr")[[4]]*1.03,"C",xpd=T,cex=2)
 
 title(xlab="spatial location", outer=T, line=2, adj=0.6)
 
-dev.copy2eps(file="figure_2.eps", title="Cobben & Kubisch - Figure 2")
+dev.copy2eps(file="figure_3.eps", title="Cobben & Kubisch - Figure 3")

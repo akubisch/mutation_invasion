@@ -40,4 +40,4 @@ text(250,par("usr")[[4]]*1.015,"C",xpd=T,cex=2)
 
 title(xlab="time (generations)",outer=T)
 
-dev.copy2eps(file="figure4a.eps",title="Cobben & Kubisch - Figure 4a")
+dev.copy2eps(file="figure_S3a.eps",title="Cobben & Kubisch - Figure S3a")
