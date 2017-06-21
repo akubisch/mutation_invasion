@@ -1,5 +1,5 @@
 # Evolving mutation rate advances the invasion speed of sexual species
-These are the sources for the simulation models used in our manuscript "Evolving mutation rate advances invasion speed of sexual species", which is currently under review for publication. These include R-scripts to analyze the results and create figures, including the most relevant data (excluding the gigabytes of raw data). A preprint version of the manuscript can be accessed on [bioRxiv](http://biorxiv.org/content/early/2016/01/20/008979 "bioRxiv").
+These are the sources for the simulation models used in our manuscript "Evolving mutation rate advances invasion speed of sexual species", which is currently under review for publication. These include R-scripts to analyze the results and create figures, including the most relevant data (excluding the gigabytes of raw data). The final version of this manuscript can be found published in BMC Evolutionary Biology (DOI: 10.1186/s12862-017-0998-8).
 
 ## Abstract
 
